@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@mui/icons-material';
 import axios from 'axios';
-
+const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL;
 // Pagination Actions Component
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -54,7 +54,7 @@ function CustomTable({ title, onCellClick }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://192.168.31.224/api/magasin.php');
+        const response = await axios.get(`${baseUrl}/api/magasin.php`);
         if (response.data) {
           setData(response.data);
         }

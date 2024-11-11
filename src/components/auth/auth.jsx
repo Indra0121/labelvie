@@ -1,25 +1,33 @@
-import React, { useState } from 'react'
-import { Box, Button, TextField,useMediaQuery } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Button, TextField, useMediaQuery } from '@mui/material';
 import loginIllu from '../../assets/svg/login-animate.svg';
-import './auth.css'
-import axios from 'axios'
-const Auth = () => {
-  
-  const [email,setEmail]=useState("")
-  const [password,setPassword]=useState("")
-  const [data, setData] = useState([]);
-  const login=()=>{
-    console.log(email,password);
-    console.log("logged in fr")
-    fetchData()
-  }
-  const fetchData=()=>{
-    axios.get('http://192.168.100.20/api/magasin.php')
-    .then(response=>console.log(response.data))
-    .catch(error=>console.error('error fetching data:',error))
-  }
-  const isMobile = useMediaQuery('(max-width:600px)');
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import './auth.css';
+import { authenticateUser } from "../../state";
 
+const Auth = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const isMobile = useMediaQuery('(max-width:600px)');
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    dispatch(
+      authenticateUser({ email, password })
+    )
+      .unwrap()
+      .then(() => {
+        console.log("Login successful");
+        navigate('/dashboard');
+      })
+      .catch((error) => {
+        console.error("Login failed:", error);
+      });
+  };
 
   return (
     <Box sx={{
@@ -34,80 +42,72 @@ const Auth = () => {
       fontWeight: 400,
       lineHeight: 1.5,
       letterSpacing: '0.05em',
-      boxSizing: 'border-box',
       padding: '2em',
       borderRadius: '0.5em',
       boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
-
     }}>
-     { !isMobile&&(
-       <Box sx={{
-        overflow: 'clipped',
-        transition: 'all 0.3s ease-in-out',
-        '&:hover': {
-          transform: 'scale(1.05)',
-        },
-      backgroundImage: `url(${loginIllu})`,
-      height: "100vh",
-      width: "100vh",
-      backgroundRepeat: 'no-repeat',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }}>
-    </Box>
-    )}
+      {!isMobile && (
+        <Box sx={{
+          overflow: 'clipped',
+          transition: 'all 0.3s ease-in-out',
+          '&:hover': { transform: 'scale(1.05)' },
+          backgroundImage: `url(${loginIllu})`,
+          height: "100vh",
+          width: "100vh",
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }} />
+      )}
       <Box sx={{
-        backgroundColor:'white',
+        backgroundColor: 'white',
         height: '65vh',
-        width:'50vh',
+        width: '50vh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignItems: 'center',
-        
-        borderRadius:'30px'
+        borderRadius: '30px',
       }}>
         <h1 className='loginwlc'>Bienvenue</h1>
         <Box>
-        <TextField 
-        id="outlined-basic" 
-        label="Email"
-        placeholder='a@a.com' 
-        variant="outlined"
-        onChange={(e)=>setEmail(e.target.value)}
-        sx={{
-          marginBottom: '1em',
-        }}/>
-        <br />
-        <TextField 
-        id="outlined-basic" 
-        label="Password" 
-        type='Mot de Passe' 
-        placeholder='*****' 
-        variant="outlined" 
-        onChange={(e)=>setPassword(e.target.value)}
-
-        />
+          <TextField 
+            id="outlined-email" 
+            label="Email"
+            placeholder="a@a.com"
+            variant="outlined"
+            onChange={(e) => setEmail(e.target.value)}
+            sx={{ marginBottom: '1em' }}
+          />
+          <TextField 
+            id="outlined-password" 
+            label="Password"
+            type="password" 
+            placeholder="*****"
+            variant="outlined"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </Box>
         <Button 
-           sx={{
-            bgcolor: 'yellow', // Background color
-            color: 'white', // Text color
-            fontWeight:'bold', // Bold font weight
-              boxShadow: 'none',
-           
+          sx={{
+            bgcolor: 'yellow',
+            color: 'white',
+            fontWeight: 'bold',
+            boxShadow: 'none',
             '&:hover': {
-              bgcolor: '#FFF5C', // Background color on hover
+              bgcolor: '#FFF5CC',
               boxShadow: 'none',
             },
           }}
-        variant="contained"  
-        onClick={login} 
-        className='loginbtn'>Connexion
+          variant="contained"
+          onClick={handleSubmit}
+          className='loginbtn'
+        >
+          Connexion
         </Button>
       </Box>
     </Box>
   );
-}
+};
 
 export default Auth;
